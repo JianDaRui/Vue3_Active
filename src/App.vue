@@ -1,17 +1,20 @@
-<script lang='tsx'>
-import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="tsx">
+import { defineComponent } from "vue";
+import HelloWorld from "./components/HelloWorld.vue";
+import Tree from "./components/Tree/Tree.vue";
+import ToDoMvc from './components/ToDoMvc/index.vue'
 export default defineComponent({
-  components: { HelloWorld },
+  components: { HelloWorld, Tree },
   render() {
     return (
       <div>
-        <img alt="Vue logo" src="./assets/logo.png" />
-        <HelloWorld/>
+        <HelloWorld />
+        <Tree></Tree>
+        <ToDoMvc></ToDoMvc>
       </div>
-    )
-  }
-})
+    );
+  },
+});
 </script>
 
 <style>
