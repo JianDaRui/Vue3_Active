@@ -1,10 +1,8 @@
 <script lang="tsx">
 import {
   defineComponent,
-  reactive,
   ref,
   h,
-  toRaw,
   computed,
   watchEffect,
   onMounted,
@@ -206,14 +204,14 @@ export default defineComponent({
               }
               {
                 /**
-                 * <input
-                      class="edit"
-                      type="text"
-                      value={todo.title}
-                      onBlur={todos.value.length}
-                      v-TodoFocus={ todo === editedTodo.value }
-                      onKeyup={(e) => handleKeyup(e, todo)}
-                    />
+                 *  <input
+                 *    class="edit"
+                 *    type="text"
+                 *    value={todo.title}
+                 *    onBlur={todos.value.length}
+                 *    v-TodoFocus={ todo === editedTodo.value }
+                 *    onKeyup={(e) => handleKeyup(e, todo)}
+                 *  />
                  * 
                  * 
                 */
