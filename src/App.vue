@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Tree from "./components/Tree/Tree.vue";
 import ToDoMvc from './components/ToDoMvc/index.vue'
+import GridDemo from './components/Grid/index.vue'
 export default defineComponent({
   components: { HelloWorld, Tree },
   render() {
@@ -11,6 +12,7 @@ export default defineComponent({
         <HelloWorld />
         <Tree></Tree>
         <ToDoMvc></ToDoMvc>
+        <GridDemo></GridDemo>
       </div>
     );
   },
