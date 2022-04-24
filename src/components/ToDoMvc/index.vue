@@ -3,11 +3,14 @@ import {
   defineComponent,
   reactive,
   ref,
+  h,
   toRaw,
   computed,
   watchEffect,
   onMounted,
   onUnmounted,
+  withDirectives,
+  resolveDirective
 } from "vue";
 
 const STORAGE_KEY = "todos-jsx-vuejs-3.x";
@@ -49,13 +52,6 @@ function pluralize(n) {
 
 export default defineComponent({
   name: "ToDoMvc",
-  directives: {
-    TodoFocus: (el, { value }) => {
-      if (value) {
-        el.focus();
-      }
-    },
-  },
   setup() {
     const todos = ref(todoStorage.fetch());
     const editedTodo = ref(null);
@@ -82,6 +78,8 @@ export default defineComponent({
         });
       },
     });
+
+    const todoFocus = resolveDirective('TodoFocus')
 
     watchEffect(() => {
       todoStorage.save(todos.value);
@@ -117,7 +115,6 @@ export default defineComponent({
         title: value,
         completed: false,
       });
-      console.log(toRaw(todos.value[0]), todos.value.length);
       newTodo.value = "";
     }
 
@@ -130,10 +127,10 @@ export default defineComponent({
       editedTodo.value = todo;
     };
     const handleKeyup = (e, todo) => {
-      if (e.keyCode === 13) {
-        doneEdit(todo);
-      } else {
+      if (e.keyCode === 27) {
         cancelEdit(todo);
+      } else if (e.keyCode === 13){
+        doneEdit(todo);
       }
     };
     function doneEdit(todo) {
@@ -141,6 +138,7 @@ export default defineComponent({
         return;
       }
       editedTodo.value = null;
+      
       todo.title = todo.title.trim();
       if (!todo.title) {
         removeTodo(todo);
@@ -156,14 +154,6 @@ export default defineComponent({
       todos.value = filters.active(todos.value);
     }
 
-    const handleCompleted = (id) => {
-      todos.value.forEach((todo) => {
-        if (todo.id === id) {
-          todo.completed = !todo.completed;
-        }
-      });
-    };
-
     const ToDoHeader = () => (
       <header class="header">
         <h1>todos</h1>
@@ -177,9 +167,7 @@ export default defineComponent({
         />
       </header>
     );
-    //
-    //
-    console.log(filteredTodos.value, todos.value.length);
+
     const ToDoBody = () => (
       <section class="main" v-show={todos.value.length}>
         <input
@@ -193,30 +181,49 @@ export default defineComponent({
           {filteredTodos.value.map((todo) => (
             <li
               key={todo.id}
-              class={{
-                todo: true,
-                completed: todo.completed,
-                editing: todo === editedTodo.value,
-              }}
+              class={
+                {
+                  todo: true,
+                  completed: todo.completed,
+                  editing: todo === editedTodo.value
+                }
+              }
             >
               <div class="view">
-                <input class="toggle" type="checkbox" v-model={todo.completed} />
-                <label onDblclick={editTodo(todo)}>{todo.title}</label>
-                <button class="destroy" onClick={removeTodo(todo)}></button>
+                <input class="toggle" type="checkbox" v-model={todo.completed}/>
+                <label onDblclick={() => editTodo(todo)}>{todo.title}</label>
+                <button class="destroy" onClick={() => removeTodo(todo)}></button>
               </div>
-              <input
-                class="edit"
-                type="text"
-                value={todo.title}
-                onBlur={todos.value.length}
-                onKeyup={handleKeyup(event, todo)}
-              />
+              {
+                withDirectives(h('input', {
+                  class: 'edit',
+                  type: 'text',
+                  value: todo.title,
+                  onChange: (e) => todo.title = e.target.value,
+                  onBlur:  () => doneEdit(todo),
+                  onKeyup: (e) => handleKeyup(e, todo)
+                }), [[todoFocus, todo === editedTodo.value]])
+              }
+              {
+                /**
+                 * <input
+                      class="edit"
+                      type="text"
+                      value={todo.title}
+                      onBlur={todos.value.length}
+                      v-TodoFocus={ todo === editedTodo.value }
+                      onKeyup={(e) => handleKeyup(e, todo)}
+                    />
+                 * 
+                 * 
+                */
+              }
             </li>
           ))}
         </ul>
       </section>
     );
-    // v-todo-focus={todo === editedTodo.value}
+    
     const ToDoFooter = () => (
       <footer class="footer" v-show={todos.value.length}>
         <span class="todo-count">
@@ -250,6 +257,7 @@ export default defineComponent({
         </button>
       </footer>
     );
+
     return () => {
       return (
         <section class="todoapp">
@@ -260,6 +268,13 @@ export default defineComponent({
       );
     };
   },
+  directives: {
+    TodoFocus: (el, { value }) => {
+      if (value) {
+        el.focus()
+      }
+    }
+  }
 });
 </script>
 <style>
