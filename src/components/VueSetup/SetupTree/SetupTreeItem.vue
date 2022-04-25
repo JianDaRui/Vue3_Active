@@ -2,7 +2,7 @@
 import { defineComponent, ref, computed, toRefs, toRaw } from "vue";
 
 export default defineComponent({
-  name: "TreeItem",
+  name: "SetupTreeItem",
   props: {
     model: Object,
   },
@@ -31,7 +31,7 @@ export default defineComponent({
     return () => {
       return (
         <li>
-          {/* 绑定事件 */}
+          {/* 不传参绑定的事件 */}
           <div class={{ bold: isFolder.value }} onClick={toggle} onDblclick={changeType}>
             {model.value.name}
             {isFolder.value && <span>[{open.value ? "-" : "+"}]</span>}
@@ -48,6 +48,7 @@ export default defineComponent({
                     <tree-item class="item" model={item}></tree-item>
                   );
                 })}
+                {/* 不传参绑定的事件 */}
                 <li class="add" onClick={addChild}>
                   +
                 </li>
@@ -62,10 +63,6 @@ export default defineComponent({
 </script>
 
 <style>
-body {
-  font-family: Menlo, Consolas, monospace;
-  color: #444;
-}
 .item {
   cursor: pointer;
   text-align: left;

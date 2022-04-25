@@ -3,6 +3,7 @@ import { defineComponent, reactive, ref } from 'vue'
 import GridDemo from './GridDemo.vue'
 
 export default defineComponent({
+  name: "JSXGrid",
   components: {
     GridDemo
   },

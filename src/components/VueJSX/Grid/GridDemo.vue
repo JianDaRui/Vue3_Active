@@ -13,7 +13,7 @@ export default defineComponent({
   setup(props) {
     const state = reactive({
       sortKey: '',
-      sortOrders: props.columns.reduce((o, key) => (o[key] = 1, o), {})
+      sortOrders: props.columns.reduce((o, key) => (o[`${key}`] = 1, o), {})
     })
 
     const filteredData = computed(() => {
@@ -21,7 +21,7 @@ export default defineComponent({
       if (filterKey) {
         filterKey = filterKey.toLowerCase()
         data = data.filter(row => {
-          return Object.keys(row).some(key => {
+          return Object.keys(row as {}).some(key => {
             return String(row[key]).toLowerCase().indexOf(filterKey) > -1
           })
         })
@@ -53,7 +53,7 @@ export default defineComponent({
                     props.columns.map(key => (
                       <th
                         onClick={() => sortBy(key)}
-                        class={ {active: state.sortKey === key} }>
+                        class={{active: state.sortKey === key}}>
                         { capitalize(key) }
                         <span class={{
                           'arrow': true,
@@ -64,7 +64,6 @@ export default defineComponent({
                     </th>
                     ))
                   }
-                    
                   </tr>
                 </thead>
                 <tbody>

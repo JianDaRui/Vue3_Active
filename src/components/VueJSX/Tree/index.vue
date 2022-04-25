@@ -2,7 +2,7 @@
 import { defineComponent, reactive } from "vue";
 import TreeItem from "./TreeItem.vue";
 export default defineComponent({
-  name: "Tree",
+  name: "JSXTree",
   components: { TreeItem },
   setup() {
     const treeData = reactive({
@@ -42,10 +42,6 @@ export default defineComponent({
 });
 </script>
 <style>
-  body {
-    font-family: Menlo, Consolas, monospace;
-    color: #444;
-  }
   .item {
     cursor: pointer;
   }

@@ -3,6 +3,7 @@ import {
   defineComponent,
   ref,
   h,
+  watch,
   computed,
   watchEffect,
   onMounted,
@@ -10,6 +11,7 @@ import {
   withDirectives,
   resolveDirective
 } from "vue";
+import { useRoute } from 'vue-router';
 
 const STORAGE_KEY = "todos-jsx-vuejs-3.x";
 
@@ -49,13 +51,14 @@ function pluralize(n) {
 }
 
 export default defineComponent({
-  name: "ToDoMvc",
+  name: "SetupToDoMvc",
   setup() {
     const todos = ref(todoStorage.fetch());
     const editedTodo = ref(null);
     const newTodo = ref("");
     const beforeEditCache = ref("");
     const visibility = ref("all");
+    const route = useRoute();
 
     const remaining = computed(() => {
       return filters.active(todos.value).length;
@@ -82,19 +85,28 @@ export default defineComponent({
     watchEffect(() => {
       todoStorage.save(todos.value);
     });
+
+    const stopWatch = watch(() => route.params, ({ status }) => {
+      onHashChange(status)
+    }, {
+      deep: true,
+      immediate: true
+    })
+
     onMounted(() => {
-      window.addEventListener("hashchange", onHashChange);
-      onHashChange();
+      // window.addEventListener("hashchange", onHashChange);
+      // onHashChange();
     });
 
     onUnmounted(() => {
-      window.removeEventListener("hashchange", onHashChange);
+      // window.removeEventListener("hashchange", onHashChange);
+      stopWatch()
     });
 
-    function onHashChange() {
-      const isVisibility = window.location.hash.replace(/#\/?/, "");
-      if (filters[isVisibility]) {
-        visibility.value = isVisibility;
+    function onHashChange(status) {
+      // const isVisibility = window.location.hash.replace(/#\/?/, "");
+      if (filters[status]) {
+        visibility.value = status;
       } else {
         window.location.hash = "";
         visibility.value = "all";
@@ -230,17 +242,17 @@ export default defineComponent({
         </span>
         <ul class="filters">
           <li>
-            <a href="#/all" class={{ selected: visibility.value === "all" }}>
+            <a href="#/vue-setup/todo/all" class={{ selected: visibility.value === "all" }}>
               All
             </a>
           </li>
           <li>
-            <a href="#/active" class={{ selected: visibility.value === "active" }}>
+            <a href="#/vue-setup/todo/active" class={{ selected: visibility.value === "active" }}>
               Active
             </a>
           </li>
           <li>
-            <a href="#/completed" class={{ selected: visibility.value === "completed" }}>
+            <a href="#/vue-setup/todo/completed" class={{ selected: visibility.value === "completed" }}>
               Completed
             </a>
           </li>
@@ -276,11 +288,6 @@ export default defineComponent({
 });
 </script>
 <style>
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
 
 button {
   margin: 0;
@@ -298,18 +305,6 @@ button {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  line-height: 1.4em;
-  background: #f5f5f5;
-  color: #111111;
-  min-width: 230px;
-  max-width: 550px;
-  margin: 0 auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 300;
-}
 
 .hidden {
   display: none;

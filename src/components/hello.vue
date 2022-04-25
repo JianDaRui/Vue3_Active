@@ -1,14 +1,14 @@
 <template>
-  <div id="app">
-    <router-view class="view"></router-view>
+  <div>
+    <header>Hello</header>
   </div>
 </template>
-<script lang="tsx">
+<script lang="ts">
 import { defineComponent } from "vue";
-import { RouterView } from 'vue-router'
 export default defineComponent({
-  components: { RouterView }
+  name: 'hello'
 });
+
 </script>
 <style>
 #app {
