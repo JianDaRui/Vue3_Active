@@ -8,6 +8,13 @@
     "src/**/*.js"
   ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "lib": [ "es2015" ],
+    "paths": {
+        "components/*": [
+            "src/components/*"
+        ]
+    },
     "jsx": "preserve",
     "allowSyntheticDefaultImports": true
   },

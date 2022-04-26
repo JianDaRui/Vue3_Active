@@ -10,9 +10,9 @@
     <ul v-if="isFolder" v-show="open">
       <setup-tree-item
         class="item"
-        v-for="model in model.children"
-        :key="model.name"
-        :model="model">
+        v-for="item in model.children"
+        :key="item.name"
+        :model="item">
       </setup-tree-item>
       <li class="add" @click="addChild">+</li>
     </ul>

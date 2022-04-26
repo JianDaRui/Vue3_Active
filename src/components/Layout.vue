@@ -46,10 +46,10 @@ export default defineComponent({
     const router = useRouter()
     const route = useRoute()
     const jsxMenuTitle = computed(() => {
-      return route.meta.title.includes('JSX') ? route.meta.title : 'Vue JSX'
+      return (route.meta.title as string).includes('JSX') ? route.meta.title : 'Vue JSX'
     })
     const setUpMenuTitle = computed(() => {
-      return route.meta.title.includes('Setup') ? route.meta.title : 'Vue Setup'
+      return  (route.meta.title as string).includes('Setup') ? route.meta.title : 'Vue Setup'
     })
     return {
       jsxMenuTitle,
