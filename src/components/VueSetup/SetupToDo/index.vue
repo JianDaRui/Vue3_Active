@@ -114,6 +114,7 @@ const state = reactive({
     }
   })
 })
+
 const route = useRoute()
 // 自定义指令
 const vTodoFocus = (el, { value }) => {
@@ -191,6 +192,13 @@ onMounted(() => {
 onUnmounted(() => {
   // window.removeEventListener('hashchange', onHashChange)
   stopWatch()
+})
+
+defineExpose({
+  removeTodo,
+  addTodo,
+  doneEdit,
+  editTodo,
 })
 </script>
 <style>

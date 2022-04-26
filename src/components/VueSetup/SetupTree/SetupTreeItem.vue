@@ -43,4 +43,9 @@ const changeType = () => {
 const addChild = () => {
   props.model.children.push({ name: 'new stuff' })
 }
+
+defineExpose({
+  open,
+  isFolder
+})
 </script>
