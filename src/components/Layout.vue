@@ -4,46 +4,56 @@
       class="el-menu-demo"
       mode="horizontal"
       background-color="#545c64"
-      :router="true"
       text-color="#fff"
       active-text-color="#ffd04b"
-      @select="handleSelect"
     >
       <el-sub-menu index="/vue-jsx">
-        <template #title>Vue JSX</template>
-        <el-menu-item index="tree">Vue JSX Tree</el-menu-item>
-        <el-menu-item index="grid">Vue JSX Grid</el-menu-item>
-        <el-menu-item index="todo/all">Vue JSX Todo</el-menu-item>
+        <template #title>{{jsxMenuTitle}}</template>
+        <router-link to="/vue-jsx/tree" tag="span">
+          <el-menu-item index="/vue-jsx/tree">Vue JSX Tree</el-menu-item>
+        </router-link>
+        <router-link  to="/vue-jsx/grid" tag="span">
+          <el-menu-item index="/vue-jsx/grid">Vue JSX Grid</el-menu-item>
+        </router-link>
+        <router-link to="/vue-jsx/todo/all" tag="span">
+          <el-menu-item index="/vue-jsx/todo/all">Vue JSX Todo</el-menu-item>
+        </router-link>
       </el-sub-menu>
       <el-sub-menu index="/vue-setup">
-        <template #title>Vue Setup Script</template>
-        <el-menu-item index="tree">Vue Setup Tree</el-menu-item>
-        <el-menu-item index="grid">Vue Setup Grid</el-menu-item>
-        <el-menu-item index="todo/all">Vue Setup Todo</el-menu-item>
+        <template #title>{{setUpMenuTitle}}</template>
+        <router-link to="/vue-setup/tree" tag="span">
+          <el-menu-item index="/vue-setup/tree">Vue Setup Tree</el-menu-item>
+        </router-link>
+        <router-link  to="/vue-setup/grid" tag="span">
+          <el-menu-item index="/vue-setup/grid">Vue Setup Grid</el-menu-item>
+        </router-link>
+        <router-link to="/vue-setup/todo/all" tag="span">
+          <el-menu-item index="/vue-setup/todo/all">Vue Setup Todo</el-menu-item>
+        </router-link>
       </el-sub-menu>
     </el-menu>
     <router-view></router-view>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { defineComponent, computed } from "vue";
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
 import { ElMenu, ElMenuItem } from 'element-plus'
 
 export default defineComponent({
   components: { RouterLink, RouterView, ElMenu, ElMenuItem },
   setup() {
     const router = useRouter()
-    // const route = useRoute()
-    const handleSelect = (key: string, keyPath: string[]) => {
-      console.log(keyPath[0], keyPath[1])
-      // console.log(router, route)
-      router.replace({
-        path: keyPath[1]
-      })
-    }
+    const route = useRoute()
+    const jsxMenuTitle = computed(() => {
+      return route.meta.title.includes('JSX') ? route.meta.title : 'Vue JSX'
+    })
+    const setUpMenuTitle = computed(() => {
+      return route.meta.title.includes('Setup') ? route.meta.title : 'Vue Setup'
+    })
     return {
-      handleSelect
+      jsxMenuTitle,
+      setUpMenuTitle
     }
   }
 });

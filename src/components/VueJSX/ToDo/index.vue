@@ -11,7 +11,7 @@ import {
   withDirectives,
   resolveDirective
 } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 const STORAGE_KEY = "todos-jsx-vuejs-3.x";
 
 const todoStorage = {
@@ -51,6 +51,7 @@ function pluralize(n) {
 
 export default defineComponent({
   name: "JSXToDo",
+  components: { RouterLink },
   setup() {
     const todos = ref(todoStorage.fetch());
     const editedTodo = ref(null);
@@ -241,19 +242,19 @@ export default defineComponent({
         </span>
         <ul class="filters">
           <li>
-            <a href="#/vue-jsx/todo/all" class={{ selected: visibility.value === "all" }}>
+            <router-link to="/vue-jsx/todo/all" active-class="selected">
               All
-            </a>
+            </router-link>
           </li>
           <li>
-            <a href="#/vue-jsx/todo/active" class={{ selected: visibility.value === "active" }}>
+            <router-link to="/vue-jsx/todo/active" active-class="selected">
               Active
-            </a>
+            </router-link>
           </li>
           <li>
-            <a href="#/vue-jsx/todo/completed" class={{ selected: visibility.value === "completed" }}>
+            <router-link to="/vue-jsx/todo/completed" active-class="selected">
               Completed
-            </a>
+            </router-link>
           </li>
         </ul>
 

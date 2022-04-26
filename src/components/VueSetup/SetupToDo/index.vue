@@ -38,9 +38,15 @@
             <span>{{ state.remainingText }}</span>
           </span>
         <ul class="filters">
-          <li><a href="#/vue-setup/todo/all" :class="{ selected: state.visibility === 'all' }">All</a></li>
-          <li><a href="#/vue-setup/todo/active" :class="{ selected: state.visibility === 'active' }">Active</a></li>
-          <li><a href="#/vue-setup/todo/completed" :class="{ selected: state.visibility === 'completed' }">Completed</a></li>
+          <li>
+            <router-link to="/vue-setup/todo/all" active-class="selected">All</router-link>
+          </li>
+          <li>
+            <router-link to="/vue-setup/todo/active" active-class="selected">Active</router-link>
+          </li>
+          <li>
+            <router-link to="/vue-setup/todo/completed" active-class="selected">Completed</router-link>
+          </li>
         </ul>
 
         <button class="clear-completed" @click="removeCompleted" v-show="state.todos.length > state.remaining">
@@ -52,7 +58,7 @@
 </template>
 <script lang="ts" setup>
 import { watch, reactive, computed, watchEffect, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 const STORAGE_KEY = 'todos-vuejs-3.x'
 const todoStorage = {
   fetch () {
