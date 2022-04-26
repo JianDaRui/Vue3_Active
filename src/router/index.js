@@ -1,7 +1,5 @@
 const Layout = () => import('components/Layout.vue')
 const Hello = () => import('components/hello.vue')
-// const VueJSX = () => import('@/pages/VueJSX/index.vue')
-// const VueSetup = () => import('@/pages/VueSetup/index.vue')
 
 const JSXTree = () => import('components/VueJSX/Tree/index.vue')
 const JSXToDo = () => import('../components/VueJSX/ToDo/index.vue')

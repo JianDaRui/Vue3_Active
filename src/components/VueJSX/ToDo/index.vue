@@ -85,6 +85,67 @@ export default defineComponent({
       todoStorage.save(todos.value);
     });
 
+    
+
+    const onHashChange = (status) => {
+      if (filters[status]) {
+        visibility.value = status;
+      } else {
+        visibility.value = "all";
+      }
+    }
+
+    const addTodo = (e) => {
+      if (e.keyCode !== 13) return;
+      const value = newTodo && newTodo.value.trim();
+
+      if (!value) {
+        return;
+      }
+      todos.value.push({
+        id: todoStorage.uid++,
+        title: value,
+        completed: false,
+      });
+      newTodo.value = "";
+    }
+
+    const removeTodo = (todo) => {
+      todos.value.splice(todos.value.indexOf(todo), 1);
+    }
+
+    const editTodo = (todo) => {
+      beforeEditCache.value = todo.title;
+      editedTodo.value = todo;
+    };
+    const handleKeyup = (e, todo) => {
+      if (e.keyCode === 27) {
+        cancelEdit(todo);
+      } else if (e.keyCode === 13){
+        doneEdit(todo);
+      }
+    };
+    const doneEdit = (todo) => {
+      if (!editedTodo.value) {
+        return;
+      }
+      editedTodo.value = null;
+      
+      todo.title = todo.title.trim();
+      if (!todo.title) {
+        removeTodo(todo);
+      }
+    }
+
+    const cancelEdit = (todo) => {
+      editedTodo.value = null;
+      todo.title = beforeEditCache.value;
+    }
+
+    const removeCompleted = () => {
+      todos.value = filters.active(todos.value);
+    }
+
     const stopWatch = watch(() => route.params, ({ status }) => {
       onHashChange(status)
     }, {
@@ -102,68 +163,9 @@ export default defineComponent({
       stopWatch()
     });
 
-    function onHashChange(status) {
-      if (filters[status]) {
-        visibility.value = status;
-      } else {
-        visibility.value = "all";
-      }
-    }
-
-    function addTodo(e) {
-      if (e.keyCode !== 13) return;
-      const value = newTodo && newTodo.value.trim();
-
-      if (!value) {
-        return;
-      }
-      todos.value.push({
-        id: todoStorage.uid++,
-        title: value,
-        completed: false,
-      });
-      newTodo.value = "";
-    }
-
-    function removeTodo(todo) {
-      todos.value.splice(todos.value.indexOf(todo), 1);
-    }
-
-    const editTodo = (todo) => {
-      beforeEditCache.value = todo.title;
-      editedTodo.value = todo;
-    };
-    const handleKeyup = (e, todo) => {
-      if (e.keyCode === 27) {
-        cancelEdit(todo);
-      } else if (e.keyCode === 13){
-        doneEdit(todo);
-      }
-    };
-    function doneEdit(todo) {
-      if (!editedTodo.value) {
-        return;
-      }
-      editedTodo.value = null;
-      
-      todo.title = todo.title.trim();
-      if (!todo.title) {
-        removeTodo(todo);
-      }
-    }
-
-    function cancelEdit(todo) {
-      editedTodo.value = null;
-      todo.title = beforeEditCache.value;
-    }
-
-    function removeCompleted() {
-      todos.value = filters.active(todos.value);
-    }
-
     const ToDoHeader = () => (
       <header class="header">
-        <h1>todos JSX</h1>
+        <h1>Todos JSX</h1>
         <input
           class="new-todo"
           autofocus

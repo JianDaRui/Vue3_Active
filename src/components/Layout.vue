@@ -7,7 +7,7 @@
       :router="true"
       text-color="#fff"
       active-text-color="#ffd04b"
-      
+      @select="handleSelect"
     >
       <el-sub-menu index="/vue-jsx">
         <template #title>Vue JSX</template>
@@ -17,12 +17,12 @@
       </el-sub-menu>
       <el-sub-menu index="/vue-setup">
         <template #title>Vue Setup Script</template>
-        <el-menu-item index="tree">Vue Setup Tree</el-menu-item>
-        <el-menu-item index="grid">Vue Setup Grid</el-menu-item>
+        <el-menu-item index="vue-setup/tree">Vue Setup Tree</el-menu-item>
+        <el-menu-item index="vue-setup/grid">Vue Setup Grid</el-menu-item>
         <el-menu-item index="todo/all">Vue Setup Todo</el-menu-item>
       </el-sub-menu>
     </el-menu>
-    <router-view class="view"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 <script lang="ts">

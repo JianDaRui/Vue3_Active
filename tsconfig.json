@@ -1,7 +1,17 @@
 {
-  "include": ["src/*", "src/**/*.vue", "src/**/*.tsx", "src/**/*.jsx", "src/**/*.ts", "src/**/*.js"],
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "src/**/*.tsx",
+    "src/**/*.jsx",
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
   "compilerOptions": {
-      "jsx": "preserve",
-      "allowSyntheticDefaultImports": true
-  }
+    "jsx": "preserve",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
