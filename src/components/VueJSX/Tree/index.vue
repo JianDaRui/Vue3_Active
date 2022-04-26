@@ -6,7 +6,7 @@ export default defineComponent({
   components: { TreeItem },
   setup() {
     const treeData = reactive({
-      name: 'My Tree',
+      name: 'My Tree JSX',
       children: [
         { name: 'hello' },
         { name: 'wat' },

@@ -1,294 +1,199 @@
-<script lang="tsx">
-import {
-  defineComponent,
-  ref,
-  h,
-  watch,
-  computed,
-  watchEffect,
-  onMounted,
-  onUnmounted,
-  withDirectives,
-  resolveDirective
-} from "vue";
-import { useRoute } from 'vue-router';
-
-const STORAGE_KEY = "todos-jsx-vuejs-3.x";
-
-const todoStorage = {
-  fetch() {
-    const todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    todos.forEach((todo, index) => {
-      todo.id = index;
-    });
-    todoStorage.uid = todos.length;
-    return todos;
-  },
-  save(todos) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-  },
-  uid: 1,
-};
-
-const filters = {
-  all(todos) {
-    return todos;
-  },
-  active(todos) {
-    return todos.filter((todo) => {
-      return !todo.completed;
-    });
-  },
-  completed(todos) {
-    return todos.filter(function (todo) {
-      return todo.completed;
-    });
-  },
-};
-
-function pluralize(n) {
-  return n === 1 ? "item" : "items";
-}
-
-export default defineComponent({
-  name: "SetupToDoMvc",
-  setup() {
-    const todos = ref(todoStorage.fetch());
-    const editedTodo = ref(null);
-    const newTodo = ref("");
-    const beforeEditCache = ref("");
-    const visibility = ref("all");
-    const route = useRoute();
-
-    const remaining = computed(() => {
-      return filters.active(todos.value).length;
-    });
-    const remainingText = computed(() => {
-      return ` ${pluralize(remaining.value)} left`;
-    });
-    const filteredTodos = computed(() => {
-      return filters[visibility.value](todos.value);
-    });
-    const allDone = computed({
-      get: function () {
-        return remaining.value === 0;
-      },
-      set: function (value) {
-        todos.value.forEach((todo) => {
-          todo.completed = value;
-        });
-      },
-    });
-
-    const todoFocus = resolveDirective('TodoFocus')
-
-    watchEffect(() => {
-      todoStorage.save(todos.value);
-    });
-
-    const stopWatch = watch(() => route.params, ({ status }) => {
-      onHashChange(status)
-    }, {
-      deep: true,
-      immediate: true
-    })
-
-    onMounted(() => {
-      // window.addEventListener("hashchange", onHashChange);
-      // onHashChange();
-    });
-
-    onUnmounted(() => {
-      // window.removeEventListener("hashchange", onHashChange);
-      stopWatch()
-    });
-
-    function onHashChange(status) {
-      // const isVisibility = window.location.hash.replace(/#\/?/, "");
-      if (filters[status]) {
-        visibility.value = status;
-      } else {
-        window.location.hash = "";
-        visibility.value = "all";
-      }
-    }
-
-    function addTodo(e) {
-      if (e.keyCode !== 13) return;
-      const value = newTodo && newTodo.value.trim();
-
-      if (!value) {
-        return;
-      }
-      todos.value.push({
-        id: todoStorage.uid++,
-        title: value,
-        completed: false,
-      });
-      newTodo.value = "";
-    }
-
-    function removeTodo(todo) {
-      todos.value.splice(todos.value.indexOf(todo), 1);
-    }
-
-    const editTodo = (todo) => {
-      beforeEditCache.value = todo.title;
-      editedTodo.value = todo;
-    };
-    const handleKeyup = (e, todo) => {
-      if (e.keyCode === 27) {
-        cancelEdit(todo);
-      } else if (e.keyCode === 13){
-        doneEdit(todo);
-      }
-    };
-    function doneEdit(todo) {
-      if (!editedTodo.value) {
-        return;
-      }
-      editedTodo.value = null;
-      
-      todo.title = todo.title.trim();
-      if (!todo.title) {
-        removeTodo(todo);
-      }
-    }
-
-    function cancelEdit(todo) {
-      editedTodo.value = null;
-      todo.title = beforeEditCache.value;
-    }
-
-    function removeCompleted() {
-      todos.value = filters.active(todos.value);
-    }
-
-    const ToDoHeader = () => (
+<template>
+  <div>
+    <section class="todoapp">
       <header class="header">
-        <h1>todos</h1>
-        <input
-          class="new-todo"
-          autofocus
-          autocomplete="off"
-          placeholder="What needs to be done?"
-          v-model={newTodo.value}
-          onKeydown={addTodo}
-        />
+        <h1>todos Setup</h1>
+        <input class="new-todo"
+                autofocus autocomplete="off"
+                placeholder="What needs to be done?"
+                v-model="state.newTodo"
+                @keyup.enter="addTodo">
       </header>
-    );
-
-    const ToDoBody = () => (
-      <section class="main" v-show={todos.value.length}>
-        <input
-          id="toggle-all"
-          class="toggle-all"
-          type="checkbox"
-          v-model={allDone.value}
-        />
+      <section class="main" v-show="state.todos.length">
+        <input id="toggle-all" class="toggle-all" type="checkbox" v-model="state.allDone">
         <label for="toggle-all">Mark all as complete</label>
         <ul class="todo-list">
-          {filteredTodos.value.map((todo) => (
-            <li
-              key={todo.id}
-              class={
-                {
-                  todo: true,
-                  completed: todo.completed,
-                  editing: todo === editedTodo.value
-                }
-              }
+          <li v-for="todo in state.filteredTodos"
+              class="todo"
+              :key="todo.id"
+              :class="{ completed: todo.completed, editing: todo === state.editedTodo }">
+            <div class="view">
+              <input class="toggle" type="checkbox" v-model="todo.completed">
+              <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
+              <button class="destroy" @click="removeTodo(todo)"></button>
+            </div>
+            <input class="edit" type="text"
+                    v-model="todo.title"
+                    v-todo-focus="todo === state.editedTodo"
+                    @blur="doneEdit(todo)"
+                    @keyup.enter="doneEdit(todo)"
+                    @keyup.escape="cancelEdit(todo)"
             >
-              <div class="view">
-                <input class="toggle" type="checkbox" v-model={todo.completed}/>
-                <label onDblclick={() => editTodo(todo)}>{todo.title}</label>
-                <button class="destroy" onClick={() => removeTodo(todo)}></button>
-              </div>
-              {
-                withDirectives(h('input', {
-                  class: 'edit',
-                  type: 'text',
-                  value: todo.title,
-                  onChange: (e) => todo.title = e.target.value,
-                  onBlur:  () => doneEdit(todo),
-                  onKeyup: (e) => handleKeyup(e, todo)
-                }), [[todoFocus, todo === editedTodo.value]])
-              }
-              {
-                /**
-                 *  <input
-                 *    class="edit"
-                 *    type="text"
-                 *    value={todo.title}
-                 *    onBlur={todos.value.length}
-                 *    v-TodoFocus={ todo === editedTodo.value }
-                 *    onKeyup={(e) => handleKeyup(e, todo)}
-                 *  />
-                 * 
-                 * 
-                */
-              }
-            </li>
-          ))}
+          </li>
         </ul>
       </section>
-    );
-    
-    const ToDoFooter = () => (
-      <footer class="footer" v-show={todos.value.length}>
-        <span class="todo-count">
-          <strong>{remaining.value}</strong>
-          <span>{remainingText.value}</span>
-        </span>
+      <footer class="footer" v-show="state.todos.length">
+          <span class="todo-count">
+            <strong>{{ state.remaining }}</strong>
+            <span>{{ state.remainingText }}</span>
+          </span>
         <ul class="filters">
-          <li>
-            <a href="#/vue-setup/todo/all" class={{ selected: visibility.value === "all" }}>
-              All
-            </a>
-          </li>
-          <li>
-            <a href="#/vue-setup/todo/active" class={{ selected: visibility.value === "active" }}>
-              Active
-            </a>
-          </li>
-          <li>
-            <a href="#/vue-setup/todo/completed" class={{ selected: visibility.value === "completed" }}>
-              Completed
-            </a>
-          </li>
+          <li><a href="#/vue-setup/todo/all" :class="{ selected: state.visibility === 'all' }">All</a></li>
+          <li><a href="#/vue-setup/todo/active" :class="{ selected: state.visibility === 'active' }">Active</a></li>
+          <li><a href="#/vue-setup/todo/completed" :class="{ selected: state.visibility === 'completed' }">Completed</a></li>
         </ul>
 
-        <button
-          class="clear-completed"
-          onClick={removeCompleted}
-          v-show={todos.value.length > remaining.value}
-        >
+        <button class="clear-completed" @click="removeCompleted" v-show="state.todos.length > state.remaining">
           Clear completed
         </button>
       </footer>
-    );
-
-    return () => {
-      return (
-        <section class="todoapp">
-          <ToDoHeader />
-          <ToDoBody />
-          <ToDoFooter />
-        </section>
-      );
-    };
+    </section>
+  </div>
+</template>
+<script lang="ts" setup>
+import { watch, reactive, computed, watchEffect, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router';
+const STORAGE_KEY = 'todos-vuejs-3.x'
+const todoStorage = {
+  fetch () {
+    const todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    todos.forEach((todo, index) => {
+      todo.id = index
+    })
+    todoStorage.uid = todos.length
+    return todos
   },
-  directives: {
-    TodoFocus: (el, { value }) => {
-      if (value) {
-        el.focus()
-      }
-    }
+  save (todos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
   }
-});
+}
+
+const filters = {
+  all (todos) {
+    return todos
+  },
+  active (todos) {
+    return todos.filter((todo) => {
+      return !todo.completed
+    })
+  },
+  completed (todos) {
+    return todos.filter(function (todo) {
+      return todo.completed
+    })
+  }
+}
+
+const pluralize = (n) => {
+  return n === 1 ? 'item' : 'items'
+}
+
+const state = reactive({
+  todos: todoStorage.fetch(),
+  editedTodo: null,
+  newTodo: '',
+  beforeEditCache: '',
+  visibility: 'all',
+  remaining: computed(() => {
+    return filters.active(state.todos).length
+  }),
+  remainingText: computed(() => {
+    return ` ${pluralize(state.remaining)} left`
+  }),
+  filteredTodos: computed(() => {
+    return filters[state.visibility](state.todos)
+  }),
+  allDone: computed({
+    get: function () {
+      return state.remaining === 0
+    },
+    set: function (value) {
+      state.todos.forEach((todo) => {
+        todo.completed = value
+      })
+    }
+  })
+})
+const route = useRoute()
+// 自定义指令
+const vTodoFocus = (el, { value }) => {
+  if (value) {
+    el.focus()
+  }
+}
+watchEffect(() => {
+  todoStorage.save(state.todos)
+})
+
+const onHashChange = (status) => {
+  if (filters[status]) {
+    state.visibility = status
+  } else {
+    window.location.hash = ''
+    state.visibility = 'all'
+  }
+}
+
+const addTodo = () => {
+  const value = state.newTodo && state.newTodo.trim()
+  if (!value) {
+    return
+  }
+  state.todos.push({
+    id: todoStorage.uid++,
+    title: value,
+    completed: false
+  })
+  state.newTodo = ''
+}
+
+const removeTodo = (todo) => {
+  state.todos.splice(state.todos.indexOf(todo), 1)
+}
+
+const editTodo = (todo) => {
+  state.beforeEditCache = todo.title
+  state.editedTodo = todo
+}
+
+const doneEdit = (todo) => {
+  if (!state.editedTodo) {
+    return
+  }
+  state.editedTodo = null
+  todo.title = todo.title.trim()
+  if (!todo.title) {
+    removeTodo(todo)
+  }
+}
+
+const cancelEdit = (todo) => {
+  state.editedTodo = null
+  todo.title = state.beforeEditCache
+}
+
+const removeCompleted = () => {
+  state.todos = filters.active(state.todos)
+}
+
+const stopWatch = watch(() => route.params, ({ status }) => {
+  onHashChange(status)
+}, {
+  deep: true,
+  immediate: true
+})
+
+onMounted(() => {
+  // window.addEventListener('hashchange', onHashChange)
+  onHashChange(route.params.status)
+})
+
+onUnmounted(() => {
+  // window.removeEventListener('hashchange', onHashChange)
+  stopWatch()
+})
 </script>
 <style>
-
 button {
   margin: 0;
   padding: 0;

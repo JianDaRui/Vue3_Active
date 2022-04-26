@@ -1,19 +1,18 @@
 <template>
-  <div class="grid-demo">
+  <div>
     <form class="search">
-      Search <input v-model="searchQuery" />
+      Setup Search <input name="query" v-model="searchQuery">
     </form>
     <setup-grid-demo
       :data="gridData"
       :columns="gridColumns"
-      filterKey={searchQuery.value}>
+      :filter-key="searchQuery">
     </setup-grid-demo>
   </div>
 </template>
-<script lang='tsx' setup>
-import { defineComponent, reactive, ref } from 'vue'
+<script lang="ts" setup>
+import { reactive, ref } from 'vue'
 import SetupGridDemo from './SetupGridDemo.vue'
-
 const searchQuery = ref('')
 const gridColumns = reactive(['name', 'power'])
 const gridData = reactive([
@@ -23,13 +22,7 @@ const gridData = reactive([
   { name: 'Jet Li', power: 8000 }
 ])
 </script>
-
 <style>
-.grid-demo {
-  font-family: Helvetica Neue, Arial, sans-serif;
-  font-size: 14px;
-  color: #444;
-}
 .search {
   margin: 10px 0;
 }

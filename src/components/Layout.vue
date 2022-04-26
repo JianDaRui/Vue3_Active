@@ -7,7 +7,7 @@
       :router="true"
       text-color="#fff"
       active-text-color="#ffd04b"
-      @select="handleSelect"
+      
     >
       <el-sub-menu index="/vue-jsx">
         <template #title>Vue JSX</template>

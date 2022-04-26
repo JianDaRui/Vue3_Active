@@ -20,7 +20,7 @@ export default defineComponent({
     return () => (
       <div class="grid-demo">
         <form class="search">
-          Search <input v-model={searchQuery.value} />
+          JSX Search <input v-model={searchQuery.value} />
         </form>
         <GridDemo
           data={gridData}

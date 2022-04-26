@@ -92,9 +92,9 @@ export default defineComponent({
       immediate: true
     })
     onMounted(() => {
-      console.log(route.params)
+      // console.log(route.params)
       // window.addEventListener("hashchange", onHashChange);
-      // onHashChange();
+      onHashChange(route.params.status);
     });
 
     onUnmounted(() => {
@@ -163,7 +163,7 @@ export default defineComponent({
 
     const ToDoHeader = () => (
       <header class="header">
-        <h1>todos</h1>
+        <h1>todos JSX</h1>
         <input
           class="new-todo"
           autofocus

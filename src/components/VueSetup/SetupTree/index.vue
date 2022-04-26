@@ -1,46 +1,41 @@
-<script lang="tsx">
-import { defineComponent, reactive } from "vue";
-import TreeItem from "./SetupTreeItem.vue";
-export default defineComponent({
-  name: "SetupTree",
-  components: { TreeItem },
-  setup() {
-    const treeData = reactive({
-      name: 'My Tree',
+<template>
+  <ul>
+    <setup-tree-item class="item" :model="treeData"></setup-tree-item>
+  </ul>
+</template>
+<script lang="ts" setup>
+import { reactive } from 'vue';
+import SetupTreeItem from './SetupTreeItem.vue'
+const treeData = reactive({
+  name: 'My Tree setup',
+  children: [
+    { name: 'hello' },
+    { name: 'wat' },
+    {
+      name: 'child folder',
       children: [
+        {
+          name: 'child folder',
+          children: [
+            { name: 'hello' },
+            { name: 'wat' }
+          ]
+        },
         { name: 'hello' },
         { name: 'wat' },
         {
           name: 'child folder',
           children: [
-            {
-              name: 'child folder',
-              children: [
-                { name: 'hello' },
-                { name: 'wat' }
-              ]
-            },
             { name: 'hello' },
-            { name: 'wat' },
-            {
-              name: 'child folder',
-              children: [
-                { name: 'hello' },
-                { name: 'wat' }
-              ]
-            }
+            { name: 'wat' }
           ]
         }
       ]
-    });
-    return () => (
-      <ul>
-        <TreeItem class="item" model={treeData}></TreeItem>
-      </ul>
-    );
-  },
-});
+    }
+  ]
+})
 </script>
+
 <style>
   .item {
     cursor: pointer;
